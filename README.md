@@ -96,12 +96,15 @@ kubectl get service frontend-external -o jsonpath='{.status.loadBalancer.ingress
 
 ## Terraform Configuration Overview
 # VPC with custom subnets
+```bash
 resource "google_compute_network" "vpc" {
   name                    = "boutique-vpc"
   auto_create_subnetworks = false
 }
+```
 
 # Subnet with secondary ranges for GKE
+```bash
 resource "google_compute_subnetwork" "subnet" {
   ip_cidr_range = "10.0.0.0/16"  # Primary range
   
@@ -126,6 +129,7 @@ resource "google_container_cluster" "primary_cluster" {
     services_secondary_range_name = "services"
   }
 }
+```
   
 
 ## Troubleshooting
