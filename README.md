@@ -59,13 +59,10 @@ nano terraform.tfvars
 
 **Example terraform.tfvars:**
 ```hcl
-project_id      = "your-gcp-project-id"
-region          = "europe-west1"  
-zone            = "europe-west1-b"
-cluster_name    = "online-boutique-cluster"
-node_count      = 3
-machine_type    = "e2-medium"
+project_id = "your-gcp-project-id"
+region     = "europe-west1"  # Default region (can be changed)
 ```
+Note: Only project_id is required. The region defaults to europe-west1 but can be overridden.
 
 ### 3. Deploy Infrastructure
 ```bash
@@ -97,24 +94,39 @@ kubectl get service frontend-external
 kubectl get service frontend-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 ```
 
-### Custom Network Configuration
-Modify `variables.tf` to adjust CIDR ranges:
-```hcl
-variable "node_cidr" {
-  description = "CIDR range for GKE nodes"
-  default     = "10.0.0.0/16"
+## Terraform Configuration Overview
+# VPC with custom subnets
+resource "google_compute_network" "vpc" {
+  name                    = "boutique-vpc"
+  auto_create_subnetworks = false
 }
 
-variable "pod_cidr" {
-  description = "CIDR range for pods"
-  default     = "10.1.0.0/16"
+# Subnet with secondary ranges for GKE
+resource "google_compute_subnetwork" "subnet" {
+  ip_cidr_range = "10.0.0.0/16"  # Primary range
+  
+  secondary_ip_range {
+    range_name    = "pods"        # 10.1.0.0/16
+    ip_cidr_range = "10.1.0.0/16"
+  }
+  
+  secondary_ip_range {
+    range_name    = "services"    # 10.2.0.0/16
+    ip_cidr_range = "10.2.0.0/16"
+  }
 }
 
-variable "service_cidr" {
-  description = "CIDR range for services"
-  default     = "10.2.0.0/16"
+# GKE Autopilot cluster
+resource "google_container_cluster" "primary_cluster" {
+  name             = "boutique-cluster"
+  enable_autopilot = true
+  
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "pods"
+    services_secondary_range_name = "services"
+  }
 }
-```
+  
 
 ## Troubleshooting
 
