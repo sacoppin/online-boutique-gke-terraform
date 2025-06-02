@@ -1,6 +1,9 @@
+Here's the formatted README.md file for your Online Boutique DevOps implementation:
+
+```markdown
 # Online Boutique DevOps Implementation
 
-Terraform-based Google Cloud infrastructure for deploying the Online Boutique microservices demo application, following DevOps best practices.
+Terraform-based Google Cloud infrastructure for deploying the Online Boutique microservices demo application.
 
 ## Solution Overview
 - **Infrastructure as Code**: Terraform-managed GCP resources
@@ -10,7 +13,7 @@ Terraform-based Google Cloud infrastructure for deploying the Online Boutique mi
 - **CI/CD Simulation**: Deployment script for Kubernetes manifests
 
 ## Repository Structure
-```tree
+```
 .
 ├── README.md                   # This documentation
 ├── deploy.sh                   # Application deployment script (CI/CD simulation)
@@ -25,52 +28,56 @@ Terraform-based Google Cloud infrastructure for deploying the Online Boutique mi
 ├── variables.tf                # Variable declarations
 ├── terraform.tfvars.example    # Example variables file
 └── versions.tf                 # Provider/version constraints
+```
 
-Precision Networking
+## Network Design
+### Precision Networking
+- **Nodes**: `10.0.0.0/16`
+- **Pods**: `10.1.0.0/16`
+- **Services**: `10.2.0.0/16`
 
-Nodes: 10.0.0.0/16
+## Security Controls
+- Dedicated service accounts with minimal permissions
+- IAM role separation for developers vs deployers
+- GKE workload identity integration
 
-Pods: 10.1.0.0/16
+## Deployment Workflow
 
-Services: 10.2.0.0/16
-
-Security Controls
-
-Dedicated service accounts with minimal permissions
-
-IAM role separation for developers vs deployers
-
-GKE workload identity integration
-
-Deployment Workflow
-Initialize Infrastructure
-
-bash
+### 1. Initialize Infrastructure
+```bash
 terraform init
 terraform plan -out=tfplan
 terraform apply tfplan
-Deploy Application
+```
 
-bash
+### 2. Deploy Application
+```bash
 chmod +x deploy.sh
 ./deploy.sh
-Access Application
+```
 
-bash
+### 3. Access Application
+```bash
 kubectl get service frontend-external | awk '{print $4}'
+```
 
-Customization
-Copy example variables file:
-
-bash
+## Customization
+1. Copy example variables file:
+```bash
 cp terraform.tfvars.example terraform.tfvars
-Edit terraform.tfvars with your configuration:
+```
 
-hcl
-project_id       = "your-project-id"
-region           = "europe-west1"
-cluster_name     = "online-boutique-prod"
+2. Edit `terraform.tfvars` with your configuration:
+```hcl
+project_id   = "your-project-id"
+region       = "europe-west1"
+cluster_name = "online-boutique-prod"
+```
 
-Cleanup
-bash
+## Cleanup
+```bash
 terraform destroy
+```
+
+```
+
